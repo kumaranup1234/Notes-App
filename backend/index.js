@@ -22,7 +22,7 @@ app.use("/", router);
 
 // Proxy middleware
 app.use(
-    '/proxy',
+    '/',
     createProxyMiddleware({
         target: 'https://notes-app-frontend-navy.vercel.app',
         changeOrigin: true,
