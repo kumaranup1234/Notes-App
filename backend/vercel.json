@@ -8,7 +8,7 @@
       "src": "/(.*)",
       "dest": "/",
       "headers": {
-        "Access-Control-allow-Origin": "*"
+        "Access-Control-Allow-Origin": "*"
       }
     }
   ]
