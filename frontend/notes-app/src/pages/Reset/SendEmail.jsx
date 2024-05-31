@@ -55,7 +55,9 @@ const SendEmail = () => {
         setError("");
 
         try {
-            const response = await axiosInstance.post("/send-email", { email });
+            const response = await axiosInstance.post("/send-email", {
+                email: email
+            });
 
             if (response.data && !response.data.error) {
                 setShowOtpInput(true);
