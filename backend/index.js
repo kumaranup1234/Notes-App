@@ -24,7 +24,7 @@ app.use("/", router);
 app.use(
     '/',
     createProxyMiddleware({
-        target: 'http://localhost:5173',
+        target: 'notes-app-frontend-navy.vercel.app',
         changeOrigin: true,
     })
 );
