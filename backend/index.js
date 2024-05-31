@@ -9,7 +9,9 @@ const { createProxyMiddleware } = require('http-proxy-middleware');
 
 
 app.use(cors({
-    origin: "*"
+    origin: ["https://deploy-mern-lwhq.app"],
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true,
 }))
 
 
