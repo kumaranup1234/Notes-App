@@ -9,7 +9,9 @@ app.use(express.json());
 
 // Configure CORS
 app.use(cors({
-    origin: "https://notes-app-frontend-navy.vercel.app"
+    origin: "https://notes-app-frontend-navy.vercel.app",
+    methods: ["POST", "GET", "PUT", "DELETE"],
+    credentials: true
 }));
 
 // Set JWT secret
