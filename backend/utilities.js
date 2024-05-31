@@ -22,10 +22,8 @@ function authenticateToken(req, res, next) {
 }
 
 
-const sendPasswordResetEmail = async (username, token) => {
+const sendPasswordResetEmail = async (username, otp) => {
     try {
-        // Construct the password reset URL with the token embedded
-        const resetUrl = `https://deploy-notes-api.vercel.app/reset-password?token=${token}`;
 
         // Configure transporter with SMTP settings
         const transporter = createTransport({
@@ -42,9 +40,7 @@ const sendPasswordResetEmail = async (username, token) => {
             to: username,
             subject: 'Password Reset',
             html: `
-                <p>You have requested to reset your password. Click the link below to proceed:</p>
-                <a href="${resetUrl}">${resetUrl}</a>
-            `
+            <p style="font-weight: bold; font-size: 18px;">Your OTP is: ${otp}</p>`
         };
 
         // Send the email

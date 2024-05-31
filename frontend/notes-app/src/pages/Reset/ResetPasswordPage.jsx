@@ -4,14 +4,12 @@ import axiosInstance from '../../utils/axiosInstance';
 import Navbar from '../../components/Navbar/Navbar';
 import Toast from '../../ToastMessage/Toast';
 import PasswordInput from "../../components/Input/PasswordInput.jsx";
+import { useResetContext } from "../../Context/ResetContext.jsx";
 
-const useQuery = () => {
-    return new URLSearchParams(useLocation().search);
-};
 
 const ResetPasswordPage = () => {
-    const query = useQuery();
-    const token = query.get('token');
+    const { resetPoint, otpToken, setReset, setToken } = useResetContext();
+
     const [newPassword, setNewPassword] = useState('');
     const [error, setError] = useState(null);
     const navigate = useNavigate();
@@ -49,14 +47,19 @@ const ResetPasswordPage = () => {
 
         setError('');
 
+
         try {
             const response = await axiosInstance.put('/reset-password', {
                 newPassword
             }, {
-                params: { token } // Passing token as a query parameter
+                headers: {
+                    Authorization: `Bearer ${otpToken}`
+                }
             });
 
             showToastMessage(response.data.message, 'edit');
+            setReset(false);
+            setToken('');
             navigate("/login");
 
 
@@ -67,14 +70,13 @@ const ResetPasswordPage = () => {
         }
     };
 
-    if (!token) {
+    if (!resetPoint) {
         return (
             <>
                 <Navbar />
                 <div className="flex items-center justify-center mt-28">
                     <div className="w-96 border rounded bg-white px-7 py-10">
-                        <h4 className="text-2xl mb-7">Invalid Token</h4>
-                        <p className="text-red-500">No valid token provided. Please use the link from your email.</p>
+                        <p className="text-red-500">Unauthorised access.</p>
                     </div>
                 </div>
             </>

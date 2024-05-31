@@ -1,17 +1,21 @@
-// SendEmail.jsx
+
 import {useEffect, useState} from "react";
 import { validateEmail } from "../../utils/helper.js";
 import axiosInstance from "../../utils/axiosInstance.js";
 import Navbar from "../../components/Navbar/Navbar.jsx";
 import Toast from "../../ToastMessage/Toast.jsx";
 import {useNavigate} from "react-router-dom";
+import {useResetContext} from "../../Context/ResetContext.jsx";
 
 const SendEmail = () => {
+    const { resetPoint, otpToken, setReset, setToken } = useResetContext();
+
     const [email, setEmail] = useState("");
+    const [otp, setOtp] = useState("");
     const [error, setError] = useState(null);
+    const [showOtpInput, setShowOtpInput] = useState(false);
 
     const navigate = useNavigate();
-
     const [showToastMsg, setShowToastMsg] = useState({
         isShown: false,
         message: "",
@@ -39,7 +43,7 @@ const SendEmail = () => {
         })
     }
 
-    const handleSubmit = async (e) => {
+    const handleSubmitEmail = async (e) => {
         e.preventDefault();
 
         if (!validateEmail(email)) {
@@ -53,9 +57,8 @@ const SendEmail = () => {
         try {
             const response = await axiosInstance.post("/send-email", { email });
 
-            if (response.data && !response.data.error){
-
-                navigate("/sent");
+            if (response.data && !response.data.error) {
+                setShowOtpInput(true);
             }
 
         } catch (error) {
@@ -65,30 +68,69 @@ const SendEmail = () => {
         }
     };
 
+    const handleSubmitOtp = async (e) => {
+        e.preventDefault();
+
+        setError('')
+
+        try {
+
+            const response = await axiosInstance.post("/send-email",
+                { email, otp }
+            );
+
+            if (response.data && !response.data.error) {
+                setToken(response.data.token);
+                setReset("true");
+                navigate("/sent");
+            }
+
+        } catch (error) {
+            const errorMessage = error.response?.data?.message || "An unexpected error occurred. Please try again";
+            setError(errorMessage);
+            showToastMessage(errorMessage);
+        }
+        navigate("/sent");
+    };
+
     return (
         <>
             <Navbar />
             <div className="flex items-center justify-center mt-28">
                 <div className="w-96 border rounded bg-white px-7 py-10">
-                    <form onSubmit={handleSubmit}>
-                        <h4 className="text-2xl mb-7">Reset</h4>
-                        <input
-                            type="text"
-                            placeholder="Email"
-                            className="input-box"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                        />
-                        <button type="submit" className="btn-primary">Send Email</button>
-                    </form>
+                    {!showOtpInput ? (
+                        <form onSubmit={handleSubmitEmail}>
+                            <h4 className="text-2xl mb-7">Reset</h4>
+                            <input
+                                type="text"
+                                placeholder="Email"
+                                className="input-box"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                            />
+                            <button type="submit" className="btn-primary">Send Email</button>
+                        </form>
+                    ) : (
+                        <form onSubmit={handleSubmitOtp}>
+                            <h4 className="text-2xl mb-7">Enter OTP</h4>
+                            <input
+                                type="text"
+                                placeholder="OTP"
+                                className="input-box"
+                                value={otp}
+                                onChange={(e) => setOtp(e.target.value)}
+                            />
+                            <button type="submit" className="btn-primary">Submit OTP</button>
+                        </form>
+                    )}
                 </div>
             </div>
-                <Toast
-                    isShown={showToastMsg.isShown}
-                    message={showToastMsg.message}
-                    type={showToastMsg.type}
-                    onClose={handleCloseToast}
-                />
+            <Toast
+                isShown={showToastMsg.isShown}
+                message={showToastMsg.message}
+                type={showToastMsg.type}
+                onClose={handleCloseToast}
+            />
         </>
     );
 };

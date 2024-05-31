@@ -1,15 +1,17 @@
 const express = require("express");
 const router = express.Router();
 const bcrypt = require("bcrypt");
-const { v4: uuidv4 } = require('uuid');
+const otplib = require('otplib');
 const jwt = require("jsonwebtoken");
 const { getConnectedClient } = require("./database");
 const { ObjectId } = require("mongodb");
 const { authenticateToken, loginLimiter, sendPasswordResetEmail, sensitiveOperationLimiter} = require("./utilities");
 
-const generateToken = () => {
-    return uuidv4();
-}
+
+const generateOTP = () => {
+    return otplib.authenticator.generate(process.env.OTP_SECRET);
+};
+
 
 // POST /create-account
 router.post("/create-account", async (req, res) => {
@@ -115,17 +117,15 @@ router.post("/send-email", sensitiveOperationLimiter, async (req, res) => {
             return res.status(401).json({message: "User doesn't exist"});
         }
 
+        const otp = generateOTP();
+        const otpExpires = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes expiry
 
-        const token = generateToken();
+        await usersCollection.updateOne(
+            { email },
+            { $set: { otp, otpExpires } }
+        );
 
-        await usersCollection.updateOne({_id: user._id}, {
-            $set: {
-                resetToken: token,
-                resetTokenExpires: new Date(Date.now() + 3600000)
-            }
-        });
-
-        await sendPasswordResetEmail(email, token);
+        await sendPasswordResetEmail(email, otp);
 
         res.status(200).json({
             error: false,
@@ -138,20 +138,72 @@ router.post("/send-email", sensitiveOperationLimiter, async (req, res) => {
     }
 })
 
-// Put /reset-password
-router.put('/reset-password', async (req, res) => {
-    const { newPassword } = req.body;
-    const { token } = req.query;
+// POST /verify-otp
+
+router.post("/verify-otp", async (req, res) => {
+    const { email, otp } = req.body;
 
     try {
         const client = getConnectedClient();
         const usersCollection = client.db("notesdb").collection("users");
 
+        const user = await usersCollection.findOne({email});
+        const isValid = otplib.authenticator.check(otp, process.env.OTP_SECRET);
+
+        if (!user || !isValid || user.otp !== otp || user.otpExpires < new Date()) {
+            return res.status(400).json({
+                error: true,
+                message: 'Invalid or expired OTP'
+            });
+        }
+
+        // Clear OTP from database
+        await usersCollection.updateOne(
+            {email},
+            {$unset: {otp: "", otpExpires: ""}}
+        );
+
+        // Generate JWT with user's ObjectId
+        const token = jwt.sign({userId: user._id}, process.env.JWT_SECRET, {expiresIn: '15m'});
+
+        res.status(200).json({
+            error: false,
+            token
+        });
+
+    } catch (error){
+        console.error('Error verifying OTP:', error);
+        res.status(500).json({
+            error: true,
+            message: 'Internal server error' });
+    }
+
+})
+
+// Put /reset-password
+router.put('/reset-password', async (req, res) => {
+    const { newPassword } = req.body;
+    const token = req.headers['authorization']?.split(' ')[1];
+
+
+    if (!token) {
+        return res.status(401).json({
+            error: true,
+            message: 'Unauthorized' });
+    }
+
+    try {
+        const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+        const { userId } = decoded;
+
+        const client = getConnectedClient();
+        const usersCollection = client.db("notesdb").collection("users");
+
         // Find the user by the token
-        const user = await usersCollection.findOne({ resetToken: token,  resetTokenExpires: { $gt: new Date() } });
+        const user = await usersCollection.findOne({ _id: new ObjectId(userId) });
 
         if (!user) {
-            return res.status(400).json({ message: 'Invalid or expired token' });
+            return res.status(400).json({ message: 'Invalid token' });
         }
 
         // Hash the new password
@@ -160,7 +212,7 @@ router.put('/reset-password', async (req, res) => {
         // Update the user's password in the database
         await usersCollection.updateOne(
             { _id: user._id },
-            { $set: { password: hashedPassword, resetToken: undefined, resetTokenExpires: undefined } }
+            { $set: { password: hashedPassword } }
         );
 
         res.status(200).json({
