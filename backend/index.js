@@ -11,7 +11,6 @@ app.use(express.json());
 app.use(cors({
     origin: "https://notes-app-frontend-navy.vercel.app",
     methods: ["GET", "POST", "PUT", "DELETE"],
-    credentials: true,
 }));
 
 // Set JWT secret
@@ -25,7 +24,7 @@ app.use("/", router);
 app.use(
     '/proxy',
     createProxyMiddleware({
-        target: 'https://notes-app-frontend-navy.vercel.app',
+        target: 'https://notes-app-frontend-navy.vercel.app/',
         changeOrigin: true,
     })
 );
