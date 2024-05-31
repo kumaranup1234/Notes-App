@@ -9,7 +9,7 @@ const { createProxyMiddleware } = require('http-proxy-middleware');
 
 
 app.use(cors({
-    origin: ["notes-app-frontend-navy.vercel.app"],
+    origin: ["https://notes-app-frontend-navy.vercel.app"],
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
 }))
