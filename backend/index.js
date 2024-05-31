@@ -21,14 +21,7 @@ app.set("jwtSecret", process.env.ACCESS_TOKEN_SECRET);
 const router = require("./routes");
 app.use("/", router);
 
-// Proxy middleware
-app.use(
-    '/',
-    createProxyMiddleware({
-        target: 'https://notes-app-frontend-navy.vercel.app',
-        changeOrigin: true,
-    })
-);
+
 
 // Define port
 const port = process.env.PORT || 8000;
