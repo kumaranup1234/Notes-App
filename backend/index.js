@@ -9,7 +9,7 @@ app.use(express.json());
 
 // Configure CORS
 app.use(cors({
-    origin: "*",
+    origin: "*"
 }));
 
 // Set JWT secret
