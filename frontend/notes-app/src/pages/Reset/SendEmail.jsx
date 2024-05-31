@@ -8,7 +8,7 @@ import {useNavigate} from "react-router-dom";
 import {useResetContext} from "../../Context/ResetContext.jsx";
 
 const SendEmail = () => {
-    const { resetPoint, otpToken, setReset, setToken } = useResetContext();
+    const { setReset, setToken } = useResetContext();
 
     const [email, setEmail] = useState("");
     const [otp, setOtp] = useState("");
@@ -76,12 +76,15 @@ const SendEmail = () => {
         try {
 
             const response = await axiosInstance.post("/send-email",
-                { email, otp }
+                {
+                    email: email,
+                    otp: otp
+                }
             );
 
             if (response.data && !response.data.error) {
                 setToken(response.data.token);
-                setReset("true");
+                setReset(true);
                 navigate("/sent");
             }
 
