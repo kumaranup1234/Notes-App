@@ -146,7 +146,7 @@ router.post("/send-email", async (req, res) => {
         console.error("Error occurred during password reset:", error);
         res.status(500).json({
             error: true,
-            message: "Error occurred during password reset"
+            message: {error}
         });
     }
 });
