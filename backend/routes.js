@@ -105,16 +105,20 @@ router.post("/login", loginLimiter, async (req, res) => {
 // Post // send email
 
 router.post("/send-email", sensitiveOperationLimiter, async (req, res) => {
-    const email  = req.body;
+    const { email } = req.body;
+
+    if (!email) {
+        return res.status(400).json({ error: true, message: "Email is required" });
+    }
 
     try {
-        const client = getConnectedClient();
+        const client = await getConnectedClient();
         const usersCollection = client.db("notesdb").collection("users");
 
         const user = await usersCollection.findOne({ email });
 
         if (!user) {
-            return res.status(401).json({message: "User doesn't exist"});
+            return res.status(401).json({ error: true, message: "User doesn't exist" });
         }
 
         const otp = generateOTP();
@@ -129,14 +133,16 @@ router.post("/send-email", sensitiveOperationLimiter, async (req, res) => {
 
         res.status(200).json({
             error: false,
-            message: "Password reset email sent" });
-    } catch (error){
+            message: "Password reset email sent"
+        });
+    } catch (error) {
         console.error("Error occurred during password reset:", error);
         res.status(500).json({
             error: true,
-            message: "Error occurred during password reset" });
+            message: "Error occurred during password reset"
+        });
     }
-})
+});
 
 // POST /verify-otp
 
