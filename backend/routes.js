@@ -105,13 +105,13 @@ router.post("/login", loginLimiter, async (req, res) => {
 // Post // send email
 
 router.post("/send-email", sensitiveOperationLimiter, async (req, res) => {
-    const { email } = req.body;
+    const email  = req.body;
 
     try {
         const client = getConnectedClient();
         const usersCollection = client.db("notesdb").collection("users");
 
-        const user = await usersCollection.findOne({email});
+        const user = await usersCollection.findOne({ email });
 
         if (!user) {
             return res.status(401).json({message: "User doesn't exist"});
