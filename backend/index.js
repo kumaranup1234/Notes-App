@@ -3,7 +3,7 @@ const cors = require('cors');
 require('dotenv').config();
 const app = express();
 const { connectToMongoDB } = require("./database");
-// const { createProxyMiddleware } = require('http-proxy-middleware');
+const { createProxyMiddleware } = require('http-proxy-middleware');
 
 app.use(express.json());
 
@@ -23,7 +23,6 @@ app.set("jwtSecret", process.env.ACCESS_TOKEN_SECRET);
 const router = require("./routes");
 app.use("/", router);
 
-/*
 
 // Proxy middleware
 app.use(
@@ -34,7 +33,6 @@ app.use(
     })
 );
 
- */
 
 // Define port
 const port = process.env.PORT || 8000;
