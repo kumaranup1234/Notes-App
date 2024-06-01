@@ -8,7 +8,7 @@ const About = () => {
                     About Us
                 </p>
                 <p className="text-center text-[18px] leading-[26px] my-0 mb-[60px] md:text-[18px] md:leading-[24px] md:mb-[60px] sm:text-[16px] sm:leading-[23px] sm:mb-[30px]">
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu
+                    Welcome to our notes app! This app is designed to help you capture, organize, and manage your thoughts and tasks effortlessly. Whether you're jotting down quick reminders, detailed plans, or creative ideas, our app provides a seamless experience to enhance your productivity and creativity.
                 </p>
                 <div className="flex flex-row items-start sm:flex-wrap sm:justify-center sm:items-center">
                     <a className="mx-[50px] sm:mx-[20px]">
