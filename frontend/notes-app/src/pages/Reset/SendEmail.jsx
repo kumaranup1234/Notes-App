@@ -70,6 +70,7 @@ const SendEmail = () => {
         } catch (error) {
             const errorMessage = error.response?.data?.message || "An unexpected error occurred. Please try again";
             setError(errorMessage);
+            setIsLoading(false);
             showToastMessage(errorMessage);
         }
     };
