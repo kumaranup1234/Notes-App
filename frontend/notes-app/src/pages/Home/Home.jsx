@@ -10,6 +10,7 @@ import Toast from "../../ToastMessage/Toast.jsx";
 import EmptyCard from "../../Cards/EmptyCard.jsx";
 import AddNotesImg from "../../assets/add-note.svg";
 import NoDataImg from "../../assets/no-data.svg";
+import Spinner from "../../components/Loading/Spinner.jsx";
 
 const Home = () => {
     const [openAddEditModal, setOpenAddEditModal] = useState({
@@ -27,6 +28,11 @@ const Home = () => {
     const [userInfo, setUserInfo] = useState([]);
     const [allNotes, setAllNotes] = useState([]);
     const [isSearch, setIsSearch] = useState(false);
+
+    const [isFirstTime, setIsFirstTime] = useState(true);
+    const [isLoading, setIsLoading] = useState(false);
+
+
 
     const navigate = useNavigate();
 
@@ -70,12 +76,20 @@ const Home = () => {
 
     // Get all notes
     const getAllNotes = async () => {
+        if (isFirstTime){
+            setIsLoading(true);
+        }
 
         try {
             const response = await axiosInstance.get("/get-all-notes");
             setAllNotes(response.data.notes);
         } catch (error) {
             console.log("An unexpected error occurred");
+        } finally {
+            if (isFirstTime) {
+                setIsLoading(false);
+                setIsFirstTime(false);
+            }
         }
     };
 
@@ -147,6 +161,9 @@ const Home = () => {
         <>
             <Navbar userInfo={userInfo} onSearchNote={onSearchNote} handleClearSearch={handleClearSearch} />
             <div className="container mx-auto">
+                {isLoading ? (
+                    <Spinner />  // Show spinner during initial load
+                ) : (
                     <>
                         {allNotes.length > 0 ? (
                             <div className="grid grid-cols-3 gap-4 mt-8">
@@ -175,6 +192,7 @@ const Home = () => {
                             />
                         )}
                     </>
+                )}
             </div>
 
             <button
