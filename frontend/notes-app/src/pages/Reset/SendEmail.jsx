@@ -6,6 +6,7 @@ import Navbar from "../../components/Navbar/Navbar.jsx";
 import Toast from "../../ToastMessage/Toast.jsx";
 import {useNavigate} from "react-router-dom";
 import {useResetContext} from "../../Context/ResetContext.jsx";
+import Spinner from "../../components/Loading/Spinner.jsx";
 
 const SendEmail = () => {
     const { setReset, setToken } = useResetContext();
@@ -14,6 +15,7 @@ const SendEmail = () => {
     const [otp, setOtp] = useState("");
     const [error, setError] = useState(null);
     const [showOtpInput, setShowOtpInput] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
 
     const navigate = useNavigate();
     const [showToastMsg, setShowToastMsg] = useState({
@@ -44,6 +46,7 @@ const SendEmail = () => {
     }
 
     const handleSubmitEmail = async (e) => {
+        setIsLoading(true)
         e.preventDefault();
 
         if (!validateEmail(email)) {
@@ -61,6 +64,7 @@ const SendEmail = () => {
 
             if (response.data && !response.data.error) {
                 setShowOtpInput(true);
+                setIsLoading(false);
             }
 
         } catch (error) {
@@ -73,7 +77,7 @@ const SendEmail = () => {
     const handleSubmitOtp = async (e) => {
         e.preventDefault();
 
-        setError('')
+        setError('');
 
         try {
 
@@ -127,6 +131,7 @@ const SendEmail = () => {
                             <button type="submit" className="btn-primary">Submit OTP</button>
                         </form>
                     )}
+                    {isLoading && <Spinner />} {/* Show spinner while waiting for the OTP */}
                 </div>
             </div>
             <Toast

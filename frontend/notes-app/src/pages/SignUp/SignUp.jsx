@@ -4,6 +4,7 @@ import PasswordInput from "../../components/Input/PasswordInput.jsx";
 import {useState} from "react";
 import {validateEmail} from "../../utils/helper.js";
 import axiosInstance from "../../utils/axiosInstance.js";
+import {useAuth} from "../../Context/AuthContext.jsx";
 
 
 const SignUp = () => {
@@ -11,7 +12,7 @@ const SignUp = () => {
     const[email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState(null);
-
+    const { login } = useAuth();
     const navigate = useNavigate();
 
 
@@ -48,7 +49,8 @@ const SignUp = () => {
             }
 
             if (response.data && response.data.accessToken){
-                localStorage.setItem("token", response.data.accessToken);
+                login(response.data.accessToken)
+               //  localStorage.setItem("token", response.data.accessToken);
                 navigate("/dashboard");
             }
 
@@ -90,7 +92,7 @@ const SignUp = () => {
                         onChange={(e) => setPassword(e.target.value)}
                     />
                     {error && <p className="text-red-500 text-xs pb-1">{error}</p>}
-                    <button type="submit" className="btn-primary">Login</button>
+                    <button type="submit" className="btn-primary">Signup</button>
 
                     <p className="text-sm text-center mt-4">
                         Already have an account?{""}
