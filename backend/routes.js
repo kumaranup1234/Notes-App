@@ -194,7 +194,8 @@ router.post("/verify-otp", async (req, res) => {
         console.error('Error verifying OTP:', error);
         res.status(500).json({
             error: true,
-            message: 'Internal server error' });
+            message: 'Internal server error'
+        });
     }
 
 })
