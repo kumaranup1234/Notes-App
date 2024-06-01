@@ -152,12 +152,12 @@ const Home = () => {
 
     return (
         <>
-            {isLoading ? (
-                <Spinner />
-            ) : (
-                <>
-                    <Navbar userInfo={userInfo} onSearchNote={onSearchNote} handleClearSearch={handleClearSearch} />
-                    <div className="container mx-auto">
+            <Navbar userInfo={userInfo} onSearchNote={onSearchNote} handleClearSearch={handleClearSearch} />
+            <div className="container mx-auto">
+                {isLoading ? (
+                    <Spinner />
+                ) : (
+                    <>
                         {allNotes.length > 0 ? (
                             <div className="grid grid-cols-3 gap-4 mt-8">
                                 {allNotes.map((item) => (
@@ -184,54 +184,54 @@ const Home = () => {
                                 }
                             />
                         )}
-                    </div>
+                    </>
+                )}
+            </div>
 
-                    <button
-                        className="w-14 h-14 flex items-center justify-center rounded-2xl bg-primary hover:bg-blue-600 fixed right-6 bottom-8"
-                        onClick={() => {
-                            setOpenAddEditModal({ isShown: true, type: "add", data: null });
-                        }}
-                    >
-                        <MdAdd className="text-[32px] text-white" />
-                    </button>
+            <button
+                className="w-14 h-14 flex items-center justify-center rounded-2xl bg-primary hover:bg-blue-600 fixed right-6 bottom-8"
+                onClick={() => {
+                    setOpenAddEditModal({ isShown: true, type: "add", data: null });
+                }}
+            >
+                <MdAdd className="text-[32px] text-white" />
+            </button>
 
-                    <Modal
-                        isOpen={openAddEditModal.isShown}
-                        onRequestClose={() => {}}
-                        style={{
-                            overlay: {
-                                backgroundColor: "rgba(0, 0, 0, 0.2)",
-                            },
-                            content: {
-                                overflowY: "auto",
-                            },
-                        }}
-                        contentLabel=""
-                        className="w-[40%] max-h-3/4 bg-white rounded-md mx-auto mt-14 p-5 overflow-scroll"
-                    >
-                        <AddEditNotes
-                            noteData={openAddEditModal.data}
-                            type={openAddEditModal.type}
-                            onClose={() => {
-                                setOpenAddEditModal({
-                                    isShown: false,
-                                    type: "add",
-                                    data: null,
-                                });
-                            }}
-                            getAllNotes={getAllNotes}
-                            showToastMessage={showToastMessage}
-                        />
-                    </Modal>
+            <Modal
+                isOpen={openAddEditModal.isShown}
+                onRequestClose={() => {}}
+                style={{
+                    overlay: {
+                        backgroundColor: "rgba(0, 0, 0, 0.2)",
+                    },
+                    content: {
+                        overflowY: "auto",
+                    },
+                }}
+                contentLabel=""
+                className="w-[40%] max-h-3/4 bg-white rounded-md mx-auto mt-14 p-5 overflow-scroll"
+            >
+                <AddEditNotes
+                    noteData={openAddEditModal.data}
+                    type={openAddEditModal.type}
+                    onClose={() => {
+                        setOpenAddEditModal({
+                            isShown: false,
+                            type: "add",
+                            data: null,
+                        });
+                    }}
+                    getAllNotes={getAllNotes}
+                    showToastMessage={showToastMessage}
+                />
+            </Modal>
 
-                    <Toast
-                        isShown={showToastMsg.isShown}
-                        message={showToastMsg.message}
-                        type={showToastMsg.type}
-                        onClose={handleCloseToast}
-                    />
-                </>
-            )}
+            <Toast
+                isShown={showToastMsg.isShown}
+                message={showToastMsg.message}
+                type={showToastMsg.type}
+                onClose={handleCloseToast}
+            />
         </>
     );
 };
