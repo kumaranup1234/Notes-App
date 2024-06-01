@@ -8,7 +8,6 @@ import { useNavigate } from "react-router-dom";
 import axiosInstance from "../../utils/axiosInstance.js";
 import Toast from "../../ToastMessage/Toast.jsx";
 import EmptyCard from "../../Cards/EmptyCard.jsx";
-import Spinner from "../../components/Loading/Spinner.jsx";
 import AddNotesImg from "../../assets/add-note.svg";
 import NoDataImg from "../../assets/no-data.svg";
 
@@ -28,7 +27,6 @@ const Home = () => {
     const [userInfo, setUserInfo] = useState([]);
     const [allNotes, setAllNotes] = useState([]);
     const [isSearch, setIsSearch] = useState(false);
-    const [isLoading, setIsLoading] = useState(true);
 
     const navigate = useNavigate();
 
@@ -72,14 +70,12 @@ const Home = () => {
 
     // Get all notes
     const getAllNotes = async () => {
-        setIsLoading(true); // Set loading to true when fetching starts
+
         try {
             const response = await axiosInstance.get("/get-all-notes");
             setAllNotes(response.data.notes);
         } catch (error) {
             console.log("An unexpected error occurred");
-        } finally {
-            setIsLoading(false); // Set loading to false when fetching ends
         }
     };
 
@@ -103,7 +99,6 @@ const Home = () => {
 
     // Search for a note
     const onSearchNote = async (query) => {
-        setIsLoading(true); // Set loading to true when searching starts
         try {
             const response = await axiosInstance.get("/search-notes", {
                 params: { query },
@@ -115,8 +110,6 @@ const Home = () => {
             }
         } catch (error) {
             console.log(error);
-        } finally {
-            setIsLoading(false); // Set loading to false when searching ends
         }
     };
 
@@ -154,9 +147,6 @@ const Home = () => {
         <>
             <Navbar userInfo={userInfo} onSearchNote={onSearchNote} handleClearSearch={handleClearSearch} />
             <div className="container mx-auto">
-                {isLoading ? (
-                    <Spinner />
-                ) : (
                     <>
                         {allNotes.length > 0 ? (
                             <div className="grid grid-cols-3 gap-4 mt-8">
@@ -185,7 +175,6 @@ const Home = () => {
                             />
                         )}
                     </>
-                )}
             </div>
 
             <button
