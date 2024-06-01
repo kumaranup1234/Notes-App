@@ -1,13 +1,22 @@
 import Navbar from "../../components/Navbar/Navbar.jsx";
+import {useNavigate} from "react-router-dom";
 
 
 const Sent = () => {
+    const  navigate = useNavigate();
+
+    const handleClick = () => {
+        navigate("/login");
+    }
 
     return (
         <>
-            <Navbar />
+            <Navbar/>
             <div className="flex items-center justify-center mt-28">
-              <p>The email has been sent with the password reset link.</p>
+                <p>Your password has been successfully changed. Click on the button below to got to login page</p>
+            </div>
+            <div className="flex justify-center">
+                <button type="submit" className="btn-primary w-20" onClick={handleClick}>Go Login</button>
             </div>
         </>
     );

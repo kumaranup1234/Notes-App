@@ -148,9 +148,11 @@ router.post("/verify-otp", async (req, res) => {
         const usersCollection = client.db("notesdb").collection("users");
 
         const user = await usersCollection.findOne({email});
-        const isValid = otplib.authenticator.check(otp, process.env.OTP_SECRET);
+        //const isValid = otplib.authenticator.check(otp, process.env.OTP_SECRET);
+        //console.log(isValid)
+        console.log(otp);
 
-        if (!user || !isValid || user.otp !== otp || user.otpExpires < new Date()) {
+        if (!user  || user.otp !== otp || user.otpExpires < new Date()) {
             return res.status(400).json({
                 error: true,
                 message: 'Invalid or expired OTP'
@@ -163,9 +165,12 @@ router.post("/verify-otp", async (req, res) => {
             {$unset: {otp: "", otpExpires: ""}}
         );
 
-        // Generate JWT with user's ObjectId
-        const token = jwt.sign({userId: user._id}, process.env.JWT_SECRET, {expiresIn: '15m'});
+        console.log(user._id);
 
+        // Generate JWT with user's ObjectId
+        const token = jwt.sign({userId: user._id}, process.env.ACCESS_TOKEN_SECRET, {expiresIn: '15m'});
+
+        console.log(token);
         res.status(200).json({
             error: false,
             token

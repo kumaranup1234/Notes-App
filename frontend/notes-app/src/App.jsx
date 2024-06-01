@@ -9,7 +9,7 @@ import SendEmail from "./pages/Reset/SendEmail.jsx";
 import ResetPasswordPage from "./pages/Reset/ResetPasswordPage.jsx";
 import Sent from "./pages/Reset/Sent.jsx";
 import {useAuth, AuthProvider} from "./Context/AuthContext.jsx";
-import { useResetContext, ResetProvider} from "./Context/ResetContext.jsx";
+import { ResetProvider} from "./Context/ResetContext.jsx";
 
 
 const ProtectedRoute = ({ element }) => {
@@ -18,11 +18,6 @@ const ProtectedRoute = ({ element }) => {
         return isLoggedIn ? element : <Navigate to="/login" />;
     }
 };
-
-const ResetProtectedRoute = ({ element }) => {
-    const { resetPoint } = useResetContext();
-    return resetPoint ? <ResetProtectedRoute element={element} /> : null;
-}
 
 const routes = (
     <Router>
@@ -34,7 +29,7 @@ const routes = (
             <Route path="/signup" element={<SignUp />} />
             <Route path="/reset" element={<SendEmail />} />
             <Route path="/reset-password" element={<ResetPasswordPage />} />
-            <Route path="/sent" element={<ResetProtectedRoute element={ <Sent />} />} />
+            <Route path="/done" element={ <Sent />}  />
         </Routes>
     </Router>
 );

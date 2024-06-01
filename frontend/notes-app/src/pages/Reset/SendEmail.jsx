@@ -77,17 +77,17 @@ const SendEmail = () => {
 
         try {
 
-            const response = await axiosInstance.post("/send-email",
+            const response = await axiosInstance.post("/verify-otp",
                 {
                     email: email,
-                    otp: otp
+                    otp: otp,
                 }
             );
 
             if (response.data && !response.data.error) {
                 setToken(response.data.token);
                 setReset(true);
-                navigate("/sent");
+                navigate("/reset-password");
             }
 
         } catch (error) {
@@ -95,7 +95,6 @@ const SendEmail = () => {
             setError(errorMessage);
             showToastMessage(errorMessage);
         }
-        navigate("/sent");
     };
 
     return (

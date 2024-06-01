@@ -48,19 +48,18 @@ const ResetPasswordPage = () => {
         setError('');
 
 
+        localStorage.setItem("token", otpToken);
+
+
         try {
             const response = await axiosInstance.put('/reset-password', {
                 newPassword
-            }, {
-                headers: {
-                    Authorization: `Bearer ${otpToken}`
-                }
             });
 
             showToastMessage(response.data.message, 'edit');
             setReset(false);
             setToken('');
-            navigate("/login");
+            navigate("/done");
 
 
         } catch (error) {
