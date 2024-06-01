@@ -104,32 +104,39 @@ router.post("/login", loginLimiter, async (req, res) => {
 
 // Post // send email
 
-router.post("/send-email", sensitiveOperationLimiter, async (req, res) => {
+router.post("/send-email", async (req, res) => {
     const { email } = req.body;
 
     if (!email) {
+        console.error("No email provided in the request body.");
         return res.status(400).json({ error: true, message: "Email is required" });
     }
 
     try {
+        console.log(`Received request to send password reset email to: ${email}`);
         const client = await getConnectedClient();
         const usersCollection = client.db("notesdb").collection("users");
 
         const user = await usersCollection.findOne({ email });
 
         if (!user) {
+            console.warn(`No user found with email: ${email}`);
             return res.status(401).json({ error: true, message: "User doesn't exist" });
         }
 
         const otp = generateOTP();
         const otpExpires = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes expiry
 
-        await usersCollection.updateOne(
+        const updateResult = await usersCollection.updateOne(
             { email },
             { $set: { otp, otpExpires } }
         );
 
+        console.log(`OTP generated and expiry set for user: ${email}`);
+
         await sendPasswordResetEmail(email, otp);
+
+        console.log(`Password reset email sent to: ${email}`);
 
         res.status(200).json({
             error: false,
@@ -143,6 +150,7 @@ router.post("/send-email", sensitiveOperationLimiter, async (req, res) => {
         });
     }
 });
+
 
 // POST /verify-otp
 
